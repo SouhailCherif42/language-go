@@ -1,104 +1,152 @@
 /*
-EXERCICE NOTÉ 3 — Gestionnaire de notes avec slices et niveaux
+EXERCICE NOTÉ 3 — Gestionnaire de scores avec array, slice et niveaux
 
-Contexte : Vous devez créer un programme CLI en Go qui lit plusieurs notes,
-les stocke dans un slice, calcule une moyenne, puis affiche une mention et un niveau.
+Contexte :
+Vous devez créer un programme CLI en Go qui manipule un tableau fixe de scores,
+crée un slice à partir de ce tableau, puis un second slice avec make,
+avant d’afficher la moyenne et le niveau de réussite.
 
-1. Créez un groupe de constantes avec iota.
-2. Déclarez un slice de float64 pour stocker plusieurs notes.
-3. Créez une fonction moyenne(notes []float64) float64.
-4. Créez une fonction mentionEtNiveau(moy float64) (string, int).
-5. Utilisez un switch avec fallthrough.
-6. Dans main(), affichez les notes, la moyenne, la mention et le niveau.
+L’objectif est de démontrer les notions suivantes :
+- array
+- slice
+- len()
+- cap()
+- boucle for
+- switch avec fallthrough
+- constantes avec iota
 
-Rendu : fichier notes.go sur GitHub
+Consignes :
+ 1. Créez un groupe de constantes avec iota pour représenter les niveaux :
+    Niveau1, Niveau2, Niveau3, Niveau4.
+
+ 2. Déclarez un array de 5 entiers contenant des scores,
+    par exemple : [5]int{10, 14, 8, 17, 12}.
+
+ 3. Créez un slice à partir de cet array,
+    par exemple : scoresSlice := scores[1:4],
+    puis affichez ses valeurs avec une boucle for.
+
+4. Affichez len() et cap() de l’array et du slice.
+
+ 5. Créez un second slice avec make,
+    par exemple : bonus := make([]int, 3, 5),
+    puis remplissez-le avec une boucle for.
+
+ 6. Créez une fonction moyenne(notes []int) float64
+    qui calcule la moyenne d’un slice avec for.
+
+ 7. Créez une fonction niveau(moy float64) int
+    qui retourne un niveau avec un switch.
+
+ 8. Créez une fonction afficherNiveaux(n int)
+    qui utilise fallthrough pour afficher tous les niveaux validés
+    jusqu’au niveau obtenu.
+
+9. Dans main(), affichez :
+  - l’array
+  - le slice extrait
+  - le slice créé avec make
+  - len() et cap()
+  - la moyenne
+  - le niveau atteint
+
+Rendu :
+fichier scores.go sur GitHub
 */
 package main
 
 import "fmt"
 
 const (
-	NiveauDebutant = iota
-	NiveauIntermediaire
-	NiveauAvance
-	NiveauExpert
+	Niveau1 = iota
+	Niveau2
+	Niveau3
+	Niveau4
 )
 
-func moyenne(notes []float64) float64 {
+func moyenne(notes []int) float64 {
 	if len(notes) == 0 {
 		return 0
 	}
 
-	var somme float64
+	somme := 0
 	for _, note := range notes {
 		somme += note
 	}
 
-	return somme / float64(len(notes))
+	return float64(somme) / float64(len(notes))
 }
 
-func mentionEtNiveau(moy float64) (string, int) {
+func niveau(moy float64) int {
 	switch {
 	case moy < 10:
-		return "Insuffisant", NiveauDebutant
+		return Niveau1
 	case moy < 12:
-		return "Passable", NiveauIntermediaire
-	case moy < 16:
-		return "Bien", NiveauAvance
+		return Niveau2
+	case moy < 15:
+		return Niveau3
 	default:
-		return "Très bien", NiveauExpert
+		return Niveau4
 	}
 }
 
-func afficherValidations(niveau int) {
-	fmt.Println("Validations obtenues :")
-
-	switch niveau {
-	case NiveauExpert:
-		fmt.Println("- Niveau Expert")
-		fallthrough
-	case NiveauAvance:
-		fmt.Println("- Niveau Avancé")
-		fallthrough
-	case NiveauIntermediaire:
-		fmt.Println("- Niveau Intermédiaire")
-		fallthrough
-	case NiveauDebutant:
-		fmt.Println("- Niveau Débutant")
-	default:
-		fmt.Println("- Aucun niveau")
-	}
-}
-
-func nomNiveau(niveau int) string {
-	switch niveau {
-	case NiveauDebutant:
-		return "Débutant"
-	case NiveauIntermediaire:
-		return "Intermédiaire"
-	case NiveauAvance:
-		return "Avancé"
-	case NiveauExpert:
-		return "Expert"
+func nomNiveau(n int) string {
+	switch n {
+	case Niveau1:
+		return "Niveau 1"
+	case Niveau2:
+		return "Niveau 2"
+	case Niveau3:
+		return "Niveau 3"
+	case Niveau4:
+		return "Niveau 4"
 	default:
 		return "Inconnu"
 	}
 }
 
-func main() {
-	notes := []float64{12.5, 15.0, 9.5, 18.0}
+func afficherNiveaux(n int) {
+	fmt.Println("Niveaux validés :")
 
-	fmt.Println("Liste des notes :")
-	for i, note := range notes {
-		fmt.Printf("Note %d : %.2f\n", i+1, note)
+	switch n {
+	case Niveau4:
+		fmt.Println("- Niveau 4")
+		fallthrough
+	case Niveau3:
+		fmt.Println("- Niveau 3")
+		fallthrough
+	case Niveau2:
+		fmt.Println("- Niveau 2")
+		fallthrough
+	case Niveau1:
+		fmt.Println("- Niveau 1")
+	default:
+		fmt.Println("- Fin de l'affichage")
+	}
+}
+
+func main() {
+	scores := [5]int{10, 14, 8, 17, 12}
+	scoresSlice := scores[1:4]
+
+	bonus := make([]int, 3, 5)
+	for i := 0; i < len(bonus); i++ {
+		bonus[i] = (i + 1) * 2
 	}
 
-	moy := moyenne(notes)
-	mention, niveau := mentionEtNiveau(moy)
+	fmt.Println("Array scores :", scores)
+	fmt.Println("Slice extrait :", scoresSlice)
+	fmt.Println("Slice bonus avec make :", bonus)
 
-	fmt.Printf("\nMoyenne : %.2f\n", moy)
-	fmt.Printf("Mention : %s\n", mention)
-	fmt.Printf("Niveau atteint : %s\n", nomNiveau(niveau))
+	fmt.Printf("len(scores) = %d | cap(scores) = %d\n", len(scores), cap(scores))
+	fmt.Printf("len(scoresSlice) = %d | cap(scoresSlice) = %d\n", len(scoresSlice), cap(scoresSlice))
+	fmt.Printf("len(bonus) = %d | cap(bonus) = %d\n", len(bonus), cap(bonus))
 
-	afficherValidations(niveau)
+	moy := moyenne(scoresSlice)
+	n := niveau(moy)
+
+	fmt.Printf("Moyenne du slice extrait : %.2f\n", moy)
+	fmt.Printf("Niveau atteint : %s\n", nomNiveau(n))
+
+	afficherNiveaux(n)
 }
