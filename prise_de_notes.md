@@ -3,7 +3,6 @@
 ## Idée générale
 
 - séance surtout orientée TP
-- notes pas censées être trop longues
 - plutôt un squelette des notions importantes
 - exemples surtout à récupérer dans les TP
 
